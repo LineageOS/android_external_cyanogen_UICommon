@@ -37,8 +37,8 @@
     </declare-styleable>
 
     <declare-styleable name="SnackbarLayout">
-        <attr name="android:maxWidth"/>
-        <attr name="elevation"/>
+        <attr name="android:maxWidth" format="dimension"/>
+        <attr name="elevation" format="integer"/>
         <attr name="maxActionInlineWidth" format="dimension"/>
     </declare-styleable>
 </resources>
