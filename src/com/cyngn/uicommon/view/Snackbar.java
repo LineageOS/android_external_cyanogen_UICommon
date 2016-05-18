@@ -17,6 +17,7 @@
 package com.cyngn.uicommon.view;
 
 import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -30,6 +31,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.WindowInsets;
 import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -166,6 +168,7 @@ public final class Snackbar {
     private final SnackbarLayout mView;
     private int mDuration;
     private Callback mCallback;
+    private WindowInsets mWindowInsets;
 
     private Snackbar(ViewGroup parent, int maxLines) {
         mParent = parent;
@@ -174,6 +177,48 @@ public final class Snackbar {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         mView = (SnackbarLayout) inflater.inflate(R.layout.layout_snackbar, mParent, false);
         mView.setMaxLines(maxLines);
+    }
+
+    private Snackbar(ViewGroup parent, int maxLines, WindowInsets windowInsets) {
+        mParent = parent;
+        mContext = parent.getContext();
+
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        mView = (SnackbarLayout) inflater.inflate(R.layout.layout_snackbar, mParent, false);
+
+        // Apply margins equal to the system insets given, preserving the original LayoutParams
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mView.getLayoutParams();
+        layoutParams.setMargins(windowInsets.getSystemWindowInsetLeft(),
+                windowInsets.getSystemWindowInsetTop(), windowInsets.getSystemWindowInsetRight(),
+                windowInsets.getSystemWindowInsetBottom());
+        mWindowInsets = windowInsets;
+        mView.setLayoutParams(layoutParams);
+        mView.setMaxLines(maxLines);
+    }
+
+    /**
+     * Make a Snackbar to display a message
+     *
+     * <p>Snackbar will try and find a parent view to hold Snackbar's view from the value given
+     * to {@code view}. Snackbar will walk up the view tree trying to find the window decor's
+     * content view.
+     *
+     *
+     * @param view     The view to find a parent from.
+     * @param text     The text to show.  Can be formatted text.
+     * @param duration How long to display the message.  Either {@link #LENGTH_SHORT} or {@link
+     *                 #LENGTH_LONG}
+     * @param windowInsets WindowInsets that have been applied to the top level parent in
+     *                     the current view hierarchy.
+     */
+    public static Snackbar make(View view, CharSequence text,
+            @Duration int duration, WindowInsets windowInsets) {
+        Snackbar snackbar = new Snackbar(findSuitableParent(view),
+                view.getResources().getInteger(R.integer.config_snackbar_text_max_lines),
+                windowInsets);
+        snackbar.setText(text);
+        snackbar.setDuration(duration);
+        return snackbar;
     }
 
     /**
@@ -233,6 +278,27 @@ public final class Snackbar {
      */
     public static Snackbar make(View view, int resId, @Duration int duration) {
         return make(view, view.getResources().getText(resId), duration);
+    }
+
+    /**
+     * Make a Snackbar to display a message.
+     *
+     * Make a Snackbar to display a message
+     *
+     * <p>Snackbar will try and find a parent view to hold Snackbar's view from the value given
+     * to {@code view}. Snackbar will walk up the view tree trying to find the window decor's
+     * content view.
+     *
+     * @param view     The view to find a parent from.
+     * @param resId    The resource id of the string resource to use. Can be formatted text.
+     * @param duration How long to display the message.  Either {@link #LENGTH_SHORT} or {@link
+     *                 #LENGTH_LONG}
+     * @param windowInsets WindowInsets that have been applied to the top level parent in
+     *                     the current view hierarchy.
+     */
+    public static Snackbar make(View view, int resId,
+            @Duration int duration, WindowInsets windowInsets) {
+        return make(view, view.getResources().getText(resId), duration, windowInsets);
     }
 
     public static Snackbar make(View view, int resId, @Duration int duration, int maxlines) {
@@ -422,20 +488,28 @@ public final class Snackbar {
 
         if (mView.isLaidOut()) {
             // If the view is already laid out, animate it now
-            animateViewIn();
+            if (mWindowInsets != null) {
+                animateViewExpand();
+            } else {
+                animateViewIn();
+            }
         } else {
             // Otherwise, add one of our layout change listeners and animate it in when laid out
             mView.setOnLayoutChangeListener(new SnackbarLayout.OnLayoutChangeListener() {
                 @Override
                 public void onLayoutChange(View view, int left, int top, int right, int bottom) {
-                    animateViewIn();
+                    if (mWindowInsets != null) {
+                        animateViewExpand();
+                    } else {
+                        animateViewIn();
+                    }
                     mView.setOnLayoutChangeListener(null);
                 }
             });
         }
     }
 
-    private void animateViewIn() {
+     private void animateViewIn() {
         mView.setTranslationY(mView.getHeight());
         mView.animate().translationY(0f)
                     .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR)
@@ -464,6 +538,46 @@ public final class Snackbar {
                     }).start();
     }
 
+    private void animateViewExpand() {
+        int height = mView.getHeight();
+        mView.getLayoutParams().height = 0;
+        mView.requestLayout();
+        mView.setVisibility(View.INVISIBLE);
+        final ValueAnimator valueAnimator = ValueAnimator.ofInt(0, height);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mView.getLayoutParams().height = (Integer) valueAnimator.getAnimatedValue();
+                mView.requestLayout();
+            }
+        });
+
+        valueAnimator.setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR);
+        valueAnimator.setDuration(ANIMATION_DURATION);
+        valueAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationCancel(Animator animation) {}
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (mCallback != null) {
+                    mCallback.onShown(Snackbar.this);
+                }
+                SnackbarManager.getInstance().onShown(mManagerCallback);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {}
+
+        });
+        valueAnimator.start();
+    }
+
     private void animateViewOut(final int event) {
         mView.animate().translationY(mView.getHeight())
                 .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR)
@@ -489,11 +603,50 @@ public final class Snackbar {
 
     }
 
+    private void animateViewCollapse(final int event) {
+        int height = mView.getHeight();
+        final ValueAnimator valueAnimator = ValueAnimator.ofInt(height, 0);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mView.getLayoutParams().height = (Integer) valueAnimator.getAnimatedValue();
+                mView.requestLayout();
+            }
+        });
+
+        valueAnimator.setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR);
+        valueAnimator.setDuration(ANIMATION_DURATION);
+        valueAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationCancel(Animator animation) {}
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mView.animateChildrenOut(0, ANIMATION_FADE_DURATION);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                onViewHidden(event);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {}
+
+        });
+        valueAnimator.start();
+    }
+
+
     final void hideView(int event) {
         if (mView.getVisibility() != View.VISIBLE) {
             onViewHidden(event);
         } else {
-            animateViewOut(event);
+            if (mWindowInsets != null) {
+                animateViewCollapse(event);
+            } else {
+                animateViewOut(event);
+            }
         }
     }
 
