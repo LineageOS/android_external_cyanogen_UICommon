@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5faad753_6b6411ba",
+        "filename": "src/com/cyngn/uicommon/view/Snackbar.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 9621
+      },
+      "writtenOn": "2016-05-18T21:14:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5faad753_80036cb8",
+      "range": {
+        "startLine": 284,
+        "startChar": 0,
+        "endLine": 284,
+        "endChar": 44
+      },
+      "revId": "20a8029c101e517e5d846c2f09759de6f0820060",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5faad753_a0fea8ab",
         "filename": "src/com/cyngn/uicommon/view/Snackbar.java",
         "patchSetId": 1
@@ -71,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "5faad753_0b5b1df7",
+        "filename": "src/com/cyngn/uicommon/view/Snackbar.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 512,
+      "author": {
+        "id": 9621
+      },
+      "writtenOn": "2016-05-18T21:14:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5faad753_e0f4a0d1",
+      "range": {
+        "startLine": 512,
+        "startChar": 5,
+        "endLine": 512,
+        "endChar": 12
+      },
+      "revId": "20a8029c101e517e5d846c2f09759de6f0820060",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5faad753_600990db",
         "filename": "src/com/cyngn/uicommon/view/Snackbar.java",
         "patchSetId": 1
@@ -82,6 +130,30 @@
       "writtenOn": "2016-05-18T14:06:46Z",
       "side": 1,
       "message": "can use https://developer.android.com/reference/android/animation/AnimatorListenerAdapter.html instead of AnimatorListener so you don\u0027t have to implement methods you don\u0027t care about.",
+      "range": {
+        "startLine": 557,
+        "startChar": 34,
+        "endLine": 557,
+        "endChar": 63
+      },
+      "revId": "20a8029c101e517e5d846c2f09759de6f0820060",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5faad753_8b6e2d93",
+        "filename": "src/com/cyngn/uicommon/view/Snackbar.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 557,
+      "author": {
+        "id": 9621
+      },
+      "writtenOn": "2016-05-18T21:14:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5faad753_600990db",
       "range": {
         "startLine": 557,
         "startChar": 34,
