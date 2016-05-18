@@ -48,6 +48,29 @@
     },
     {
       "key": {
+        "uuid": "5faad753_e0f4a0d1",
+        "filename": "src/com/cyngn/uicommon/view/Snackbar.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 512,
+      "author": {
+        "id": 1448
+      },
+      "writtenOn": "2016-05-18T14:07:19Z",
+      "side": 1,
+      "message": "Extra space",
+      "range": {
+        "startLine": 512,
+        "startChar": 5,
+        "endLine": 512,
+        "endChar": 12
+      },
+      "revId": "20a8029c101e517e5d846c2f09759de6f0820060",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5faad753_600990db",
         "filename": "src/com/cyngn/uicommon/view/Snackbar.java",
         "patchSetId": 1
