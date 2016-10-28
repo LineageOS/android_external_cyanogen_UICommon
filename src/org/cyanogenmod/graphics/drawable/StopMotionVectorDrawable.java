@@ -20,6 +20,7 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.AnimatedVectorDrawable.VectorDrawableAnimatorRT;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableWrapper;
 import android.util.Log;
@@ -91,6 +92,10 @@ public class StopMotionVectorDrawable extends DrawableWrapper {
             _mAnimatorSet.setAccessible(true);
             Class<?> innerClazz = Class.forName("android.graphics.drawable.AnimatedVectorDrawable$VectorDrawableAnimatorUI");
             Object _inner = _mAnimatorSet.get(mDrawable);
+            if (_inner instanceof VectorDrawableAnimatorRT) {
+                mDrawable.forceAnimationOnUI();
+                _inner = _mAnimatorSet.get(mDrawable);
+            }
             Field _mSet = innerClazz.getDeclaredField("mSet");
             _mSet.setAccessible(true);
             mAnimatorSet = (AnimatorSet) _mSet.get(_inner);
